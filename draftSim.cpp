@@ -10,142 +10,139 @@ using namespace std;
 
 int main(){
 
-  //get players & draft position
-  int playCount, draftPos;
-  cout << "Players in the draft: ";
-  cin >> playCount;
-  cout << "Draft position: ";
-  cin >> draftPos;
+	//get players & draft position
+	int playCount, draftPos;
+	cout << "Players in the draft: ";
+	cin >> playCount;
+	cout << "Draft position: ";
+	cin >> draftPos;
 
-  cout << "Starting draft simulation..." << endl;
-  vectorInit(); //create position vectors from file
-  teamVecInit(playCount);
-  
-  int round = 1;
-  bool fromStart = true;
+	cout << "Starting draft simulation..." << endl;
+	vectorInit(); //create position vectors from file
+	teamVecInit(playCount);
 
-  while(round <= 16){
+	int round = 1;
+	bool fromStart = true;
+
+  	while(round <= 16){
     
-    if(fromStart){
+		if(fromStart){
 
-      //iterate through players from start
-      for(int i = 0 ; i < playCount ; i++){
+			//iterate through players from start
+			for(int i = 0 ; i < playCount ; i++){
 
-	      cout << endl;
-	      cout << "Round " << round << endl;
+				cout << endl;
+				cout << "Round " << round << endl;
 
-	      if(i == draftPos-1){
-      	  cout << "It is your pick!" << endl;
-	        cout << "----------------" << endl;
-      	  cout << "Top ranked available players for each position:" << endl;
-		  cout << endl;
+				if(i == draftPos-1){
+					cout << "It is your pick!" << endl;
+					cout << "----------------" << endl;
+					cout << "Top ranked available players for each position:" << endl;
+					cout << endl;
 
-          viewTopPlayers();
-	        cout << endl;
-	  
-	        if(teams[i].size()){
-	          cout << "Your previous pick: ";
-	          teams[i][teams[i].size()-1].printPlayer();
+					viewTopPlayers(); // view top available players
+					cout << endl;
+		
+					if(teams[i].size()){
+						cout << "Your previous pick: ";
+						teams[i][teams[i].size()-1].printPlayer();
 
-			  printPosCount(i);
-			  cout << endl;
-	        }
+						printPosCount(i);
+						cout << endl;
+					}
 
-          while(1){
-	
-	          int adp;
-	          cout << "ADP of your pick: ";
-	          cin >> adp;
+					// get user pick
+					while(1){
+			
+						int adp;
+						cout << "ADP of your pick: ";
+						cin >> adp;
 
-			  if(adp <= 0 || adp >= 300){
-				return 0;
-			  }
+						if(adp <= 0 || adp >= 300){
+							cout << "error: ADP out of bounds" << endl;
+						}
+						else if(removePlayer(adp, i)){
+							break;
+						}
+					}
+				}
+				else{
+					cout << "Player #" << i+1;
+					cout << endl;
+					autoDraft(i);
+				}
+			}
+			fromStart = false;
+		}
+		else{
 
-	          if(removePlayer(adp, i)){
-	            break;
-	          }
-          }
-	      }
-	      else{
-	        cout << "Player #" << i+1;
-          cout << endl;
+			//iterate through players from end
+			for(int i = playCount-1 ; i >= 0 ; i--){
 
-          autoDraft(i);
-          
-	      }
-      }
-      fromStart = false;
-    }
-    else{
+				cout << endl;
+				cout << "Round " << round << endl;
+				cout << endl;
+			
+				if(i == draftPos-1){
+					cout << "It is your pick!" << endl;
+					cout << "Top ranked available player for each position:" << endl;
+					cout << endl;
 
-      //iterate through players from end
-      for(int i = playCount-1 ; i >= 0 ; i--){
+					viewTopPlayers();
+					cout << endl;
 
-	      cout << endl;
-	      cout << "Round " << round << endl;
-	
-	      cout << endl;
-	      if(i == draftPos-1){
-      	  cout << "It is your pick!" << endl;
-      	  cout << "Top ranked available player for each position:" << endl;
-		  cout << endl;
+					if(teams[i].size()){
+						cout << "Your previous pick: ";
+						teams[i][teams[i].size()-1].printPlayer();
 
-          viewTopPlayers();
-          cout << endl;
+						printPosCount(i);
+						cout << endl;
+					}
 
-	        if(teams[i].size()){
-	          cout << "Your previous pick: ";
-	          teams[i][teams[i].size()-1].printPlayer();
+					while(1){
+			
+						int adp;
+						cout << "ADP of your pick: ";
+						cin >> adp;
 
-			  printPosCount(i);
-			  cout << endl;
-	        }
+						if(adp <= 0 || adp >= 300){
+							return 0;
+						}
 
-          while(1){
-	
-	          int adp;
-	          cout << "ADP of your pick: ";
-	          cin >> adp;
+						if(removePlayer(adp, i)){
+							break;
+						}
+					}
+				}
+				else{
+					cout << "Player #" << i+1;
+					cout << endl;
+					autoDraft(i);
+				}
+			}
+			fromStart = true;
+		}
+		round++;
+  	}
 
-			  if(adp <= 0 || adp >= 300){
-				return 0;
-			  }
+	cout << endl;
+	viewLineup(draftPos-1);
+	cout << endl;
 
-	          if(removePlayer(adp, i)){
-	            break;
-	          }
-          }
-	      }
-	      else{
-	        cout << "Player #" << i+1;
-          cout << endl;
+  	while(1){
 
-          autoDraft(i);
-	      }
-      }
-      fromStart = true;
-    }
-    round++;
-  }
+		int n;
+		cout << "Type team number to view team (1 - " << playCount;
+		cout << "): ";
+		cin >> n;
 
-  cout << endl;
-  viewLineup(draftPos-1);
-  cout << endl;
+		if(n>= 1 && n <= playCount){
+			viewLineup(n-1);
+		}
+		else{
+			break;
+		}
+  	}
 
-  while(1){
-
-	int n;
-	cout << "Type team number to view team (1 - " << playCount;
-	cout << "): ";
-	cin >> n;
-
-	if(n>= 1 && n <= playCount){
-		viewLineup(n-1);
-	}
-	else{
-		break;
-	}
-  }
-
-  return 0;
+  	return 0;
 }
